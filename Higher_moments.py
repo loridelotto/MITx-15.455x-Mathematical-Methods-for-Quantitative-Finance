@@ -57,3 +57,54 @@ axes[1].legend()
 
 plt.tight_layout()
 plt.show()
+
+# ============================================================
+# TWO IID RANDOM VARIABLES  –  Covariance & Correlation
+# ============================================================
+# X and Y are independent and identically distributed (IID)
+# Both drawn from N(mu=0.05, sigma=1.0) with the same
+# extreme-event contamination used above.
+
+np.random.seed(99)
+n = 1000
+
+X = np.concatenate([
+    np.random.normal(loc=0.05, scale=1.0, size=950),
+    np.random.normal(loc=-3.0, scale=0.5, size=50)
+])
+
+Y = 3*X 
+
+# --- Covariance (manual) ---
+mu_X = np.mean(X)
+mu_Y = np.mean(Y)
+cov_XY = np.mean((X - mu_X) * (Y - mu_Y))
+
+# --- Correlation (manual) ---
+sigma_X = np.std(X)
+sigma_Y = np.std(Y)
+corr_XY = cov_XY / (sigma_X * sigma_Y)
+
+# --- NumPy built-in (for verification) ---
+cov_matrix = np.cov(X, Y, ddof=0)        # population covariance matrix
+corr_matrix = np.corrcoef(X, Y)           # correlation matrix
+
+print("\n===== Two IID Variables (X, Y) =====")
+print(f"E[X]  = {mu_X:.4f}    E[Y]  = {mu_Y:.4f}")
+print(f"σ(X)  = {sigma_X:.4f}   σ(Y)  = {sigma_Y:.4f}")
+print(f"Cov(X,Y)  = {cov_XY:.4f}   (expected ≈ 0 for independent vars)")
+print(f"Corr(X,Y) = {corr_XY:.4f}   (expected ≈ 0 for independent vars)")
+print(f"\nNumPy cov matrix:\n{cov_matrix}")
+print(f"\nNumPy corr matrix:\n{corr_matrix}")
+
+# --- Scatter plot ---
+fig2, ax2 = plt.subplots(figsize=(6, 6))
+ax2.scatter(X, Y, s=8, alpha=0.5, color="steelblue")
+ax2.axhline(mu_Y, color="grey", linestyle="--", linewidth=0.8)
+ax2.axvline(mu_X, color="grey", linestyle="--", linewidth=0.8)
+ax2.set_title(f"Scatter X vs Y  (ρ = {corr_XY:.4f})")
+ax2.set_xlabel("X")
+ax2.set_ylabel("Y")
+ax2.set_aspect("equal")
+plt.tight_layout()
+plt.show()
